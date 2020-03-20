@@ -1,0 +1,51 @@
+FROM php:fpm-alpine
+
+# 2020.09.01
+# Alpine 3.12
+# PHP 7.4.9
+
+ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
+
+RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
+    install-php-extensions bcmath calendar decimal exif gd imagick intl memcached opcache mysqli pdo_mysql pdo_pgsql pgsql redis soap tidy uuid xdebug xsl zip
+
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+# Install Composer
+RUN install -d -m 0755 -o www-data -g www-data /.composer &&\
+    curl -sS https://getcomposer.org/installer | \
+        php -- --install-dir=/usr/local/bin \
+               --filename=composer &&\
+    chown -R www-data:www-data /.composer
+
+
+
+# disable xdebug
+RUN install -d -m 0755 -o www-data -g www-data /p /p/xdebug /p/others && \
+    mv /usr/local/etc/php/conf.d/*xdebug.ini /p/xdebug/;
+    
+COPY ./server/php/100-others.ini /p/others/100-others.ini
+
+# enable some custom config for php
+RUN chown -R www-data:www-data /p
+
+# install tools: git, nano
+RUN apk --update add --no-cache git less openssh nano runit && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /tmp/*
+
+# integrate runit
+COPY ./server/runit/boot.sh /sbin/boot.sh
+RUN chmod +x /sbin/boot.sh
+
+# runit config
+RUN mkdir /etc/service/fpm
+COPY ./server/runit/php-fpm /etc/service/fpm/run
+RUN chmod +x /etc/service/fpm/run
+
+WORKDIR /usr/www/src  
+
+EXPOSE 9000
+
+CMD [ "/sbin/boot.sh" ]

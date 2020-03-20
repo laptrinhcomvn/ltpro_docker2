@@ -1,0 +1,167 @@
+version: "3.3"
+
+# Ref https://docs.docker.com/compose/compose-file/
+
+services:
+  redis:
+    image: 'redis:alpine'
+    container_name: redis
+    sysctls:
+      - net.core.somaxconn=511
+    volumes:
+      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/redis/rc.local:/etc/rc.local'
+      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/redis/data:/data'
+    networks:
+      - backend
+    expose:
+      - '6379'
+    restart: always
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.125'
+          memory: 50M
+        reservations:
+          cpus: '0.125'
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+
+  nginx:
+    image: 'laptrinhcomvn/ltpro_nginx:latest'
+    container_name: nginx
+    environment:
+      - ENABLE_IPV6=true
+      - TZ=Asia/Ho_Chi_Minh
+    working_dir: /usr/www/src
+    networks:
+      - backend
+      - frontend
+    restart: always
+    depends_on:
+      - phpfpm
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      #- ./src:/usr/www/src
+      - '/Volumes/WORK/PROJECTS/DOCKERS/nginx-servers:/etc/nginx/sites-enabled'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass:/usr/www/src/mclass'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_apps:/usr/www/src/mclass_apps'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_landingpages:/usr/www/src/mclass_landingpages'
+      - '/Volumes/WORK/PROJECTS/BSCHOOL/SRC/bschool2:/usr/www/src/bschool2'
+      - '/Volumes/WORK/PROJECTS/Edemy/SRC/edemyvn:/usr/www/src/dev.edemy.lat'
+      - '/Volumes/WORK/PROJECTS/Edemy/SRC/istnu:/usr/www/src/istnu.edemy.lat'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclassvn3:/usr/www/src/mclassvn3'
+      - '/Volumes/WORK/PROJECTS/LocBan/ToyotaLP:/usr/www/src/landingpage'
+
+  phpfpm:
+    image: 'laptrinhcomvn/ltpro_phpfpm:latest'
+    container_name: phpfpm
+    environment:
+      - ENABLE_IPV6=true
+      - TZ=Asia/Ho_Chi_Minh
+    working_dir: /usr/www/src
+    networks:
+      - backend
+    #  - frontend
+    restart: always
+    # ports:
+    #   - "9000:9000"
+    depends_on:
+      - redis
+      - mysql
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 64M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/php/100-others-debug.ini:/p/others/100-others.ini'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass:/usr/www/src/mclass'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_apps:/usr/www/src/mclass_apps'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_landingpages:/usr/www/src/mclass_landingpages'
+      - '/Volumes/WORK/PROJECTS/BSCHOOL/SRC/bschool2:/usr/www/src/bschool2'
+      - '/Volumes/WORK/PROJECTS/Edemy/SRC/edemyvn:/usr/www/src/dev.edemy.lat'
+      - '/Volumes/WORK/PROJECTS/Edemy/SRC/istnu:/usr/www/src/istnu.edemy.lat'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclassvn3:/usr/www/src/mclassvn3'
+      
+  phpjobs:
+    image: 'laptrinhcomvn/ltpro_phpfpm:latest'
+    container_name: phpjobs
+    environment:
+      - ENABLE_IPV6=true
+      - TZ=Asia/Ho_Chi_Minh
+    working_dir: /usr/www/src
+    networks:
+      - backend
+    restart: always
+    depends_on:
+      - mysql
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 64M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/runit/sample-laravel-job/boot_job_only.sh:/sbin/boot.sh'
+      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_apps:/usr/www/src/mclass_apps'
+      - '/Volumes/WORK/PROJECTS/MCLASS/server/runit/mclass_app_queues:/etc/service/mclass_app_queues'
+    
+  
+  mysql:
+    image: 'mysql:8.0.20'
+    command: '--default-authentication-plugin=mysql_native_password'
+    container_name: mysql
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - MYSQL_ROOT_PASSWORD=TVUhnqbgL6kTZ4VT
+    volumes:
+      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/mysql/my.cnf:/etc/mysql/conf.d/my.cnf'
+      - '/Volumes/WORK/PROJECTS/DOCKERS/mysql/data:/var/lib/mysql'
+    networks:
+      - backend
+    restart: always
+    ports:
+      - '3306:3306'
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 768M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+networks:
+  backend: null
+  frontend: null
