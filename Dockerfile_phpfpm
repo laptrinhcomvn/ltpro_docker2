@@ -2,7 +2,17 @@ FROM php:fpm-alpine
 
 # 2020.09.01
 # Alpine 3.12
-# PHP 7.4.9
+# PHP 7.4.10
+# using supercronic v0.1.11
+# This image can use for PHP-FPM or cronjob
+
+ENV JOB_ONLY="No"
+
+ENV SUPERCRONIC_VERSION="v0.1.11" \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=a2e2d47078a8dafc5949491e5ea7267cc721d67c
+
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/$SUPERCRONIC_VERSION/$SUPERCRONIC
 
 ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
 
@@ -19,7 +29,6 @@ RUN install -d -m 0755 -o www-data -g www-data /.composer &&\
     chown -R www-data:www-data /.composer
 
 
-
 # disable xdebug
 RUN install -d -m 0755 -o www-data -g www-data /p /p/xdebug /p/others && \
     mv /usr/local/etc/php/conf.d/*xdebug.ini /p/xdebug/;
@@ -30,7 +39,7 @@ COPY ./server/php/100-others.ini /p/others/100-others.ini
 RUN chown -R www-data:www-data /p
 
 # install tools: git, nano
-RUN apk --update add --no-cache git less openssh nano runit && \
+RUN apk --update add --no-cache git openssh nano runit && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
@@ -39,10 +48,25 @@ RUN apk --update add --no-cache git less openssh nano runit && \
 COPY ./server/runit/boot.sh /sbin/boot.sh
 RUN chmod +x /sbin/boot.sh
 
-# runit config
+# supercronic for cronjob
+RUN curl -fsSLO "$SUPERCRONIC_URL" \
+    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+
+COPY ./server/crontabs/lt-crons /etc/crontabs/lt-crons
+
+# runit services config for fpm
 RUN mkdir /etc/service/fpm
 COPY ./server/runit/php-fpm /etc/service/fpm/run
 RUN chmod +x /etc/service/fpm/run
+
+
+# runit config service config for supercronic
+RUN mkdir /etc/service/supercronic && touch /etc/service/supercronic/down
+COPY ./server/runit/supercronic /etc/service/supercronic/run
+RUN chmod +x /etc/service/supercronic/run
 
 WORKDIR /usr/www/src  
 
