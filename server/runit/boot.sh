@@ -27,10 +27,14 @@ export > /etc/envvars
 
 PATH=/usr/local/bin:/usr/local/sbin:/bin:/sbin:/usr/bin:/usr/sbin
 
-if [ "$JOB_ONLY" = "1" ] || [ "$JOB_ONLY" = "Yes" ] 
+if [ "$JOB_ONLY" = "1" ] || [ "$JOB_ONLY" = "Yes" ] || [ "$CRON_ONLY" = "1" ] || [ "$CRON_ONLY" = "Yes" ] 
 then
   # Stop service fpm
   touch /etc/service/fpm/down
+fi
+
+if [ "$CRON_ONLY" = "1" ] || [ "$CRON_ONLY" = "Yes" ] 
+then
   # allow supercronic run
   rm -rf /etc/service/supercronic/down
 fi

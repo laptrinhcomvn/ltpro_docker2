@@ -47,7 +47,7 @@ RUN strip /usr/local/modsecurity/bin/* /usr/local/modsecurity/lib/*.a /usr/local
 
 FROM nginx:alpine-perl as ext-builder
 
-ENV NGINX_VERSION=1.19.2
+ENV NGINX_VERSION=1.19.3
 ENV NGX_REDIS_VERSION=0.3.9
 ENV LUAJIT_LIB=/usr/lib
 ENV LUAJIT_INC=/usr/include/luajit-2.1
@@ -271,7 +271,7 @@ RUN apk --update add --no-cache git less openssh nano && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
 
-WORKDIR /usr/www
+WORKDIR /usr/www/src
 
 EXPOSE 80 443
 

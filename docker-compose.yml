@@ -9,8 +9,8 @@ services:
     sysctls:
       - net.core.somaxconn=511
     volumes:
-      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/redis/rc.local:/etc/rc.local'
-      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/redis/data:/data'
+      - ./server/redis/rc.local:/etc/rc.local'
+      - ./server/redis/data:/data'
     networks:
       - backend
     expose:
@@ -49,19 +49,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      #- ./src:/usr/www/src
-      - '/Volumes/WORK/PROJECTS/DOCKERS/nginx-servers:/etc/nginx/sites-enabled'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass:/usr/www/src/mclass'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_apps:/usr/www/src/mclass_apps'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_landingpages:/usr/www/src/mclass_landingpages'
-      - '/Volumes/WORK/PROJECTS/BSCHOOL/SRC/bschool2:/usr/www/src/bschool2'
-      - '/Volumes/WORK/PROJECTS/Edemy/SRC/edemyvn:/usr/www/src/dev.edemy.lat'
-      - '/Volumes/WORK/PROJECTS/Edemy/SRC/istnu:/usr/www/src/istnu.edemy.lat'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclassvn3:/usr/www/src/mclassvn3'
-      - '/Volumes/WORK/PROJECTS/LocBan/loclanding:/usr/www/src/landingpage'
-      #- '/Volumes/WORK/PROJECTS/Edemy/SRC/lib-jitsi-meet:/usr/www/src/testmeet.lat'
-      - '/Volumes/WORK/PROJECTS/FREELANCE/soicau68/SRC/soicau68:/usr/www/src/soicau68'
-      - '/Volumes/WORK/PROJECTS/XCLASS/SRC/virtual-xclass:/usr/www/src/myclass.edemy.lat'
+      - ./src:/usr/www/src
+      - './nginx/sites-enabled:/etc/nginx/sites-enabled'
 
   phpfpm:
     image: 'laptrinhcomvn/ltpro_phpfpm:latest'
@@ -72,10 +61,7 @@ services:
     working_dir: /usr/www/src
     networks:
       - backend
-    #  - frontend
     restart: always
-    # ports:
-    #   - "9000:9000"
     depends_on:
       - redis
       - mysql
@@ -94,19 +80,13 @@ services:
         max_attempts: 3
         window: 120s
     volumes:
-      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/php/100-others-debug.ini:/p/others/100-others.ini'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass:/usr/www/src/mclass'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_apps:/usr/www/src/mclass_apps'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_landingpages:/usr/www/src/mclass_landingpages'
-      - '/Volumes/WORK/PROJECTS/BSCHOOL/SRC/bschool2:/usr/www/src/bschool2'
-      - '/Volumes/WORK/PROJECTS/Edemy/SRC/edemyvn:/usr/www/src/dev.edemy.lat'
-      - '/Volumes/WORK/PROJECTS/Edemy/SRC/istnu:/usr/www/src/istnu.edemy.lat'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclassvn3:/usr/www/src/mclassvn3'
-      - '/Volumes/WORK/PROJECTS/FREELANCE/soicau68/SRC/soicau68:/usr/www/src/soicau68'
+      #- './server/php/100-others-debug.ini:/p/others/100-others.ini' #debug
+      - '.src:/usr/www/src'
+
       
-  phpjobs:
+  jobs:
     image: 'laptrinhcomvn/ltpro_phpfpm:latest'
-    container_name: phpjobs
+    container_name: jobs
     environment:
       - ENABLE_IPV6=true
       - TZ=Asia/Ho_Chi_Minh
@@ -117,10 +97,37 @@ services:
     depends_on:
       - mysql
     volumes:
-      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/crontabs/lt-crons:/etc/crontabs/lt-crons'
-      - '/Volumes/WORK/PROJECTS/BSCHOOL/SRC/bschool2:/usr/www/src/bschool2'
-      - '/Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_apps:/usr/www/src/mclass_apps'
-      - '/Volumes/WORK/PROJECTS/MCLASS/server/runit/mclass_app_queues:/etc/service/mclass_app_queues'
+      #- ./runit/my_service:/etc/service/my_service # read runit docs
+    restart: always
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 64M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+  crons:
+    image: 'laptrinhcomvn/ltpro_phpfpm:latest'
+    container_name: crons
+    environment:
+      - ENABLE_IPV6=true
+      - TZ=Asia/Ho_Chi_Minh
+      - CRON_ONLY=1
+    working_dir: /usr/www/src
+    networks:
+      - backend
+    depends_on:
+      - mysql
+    volumes:
+      #- ./server/crontabs/lt-crons:/etc/crontabs/lt-crons # read supercronic đocs
     restart: always
     deploy:
       replicas: 1
@@ -145,8 +152,8 @@ services:
       - TZ=Asia/Ho_Chi_Minh
       - MYSQL_ROOT_PASSWORD=12345678
     volumes:
-      - '/Volumes/WORK/PROJECTS/DOCKERS/ltpro_docker2/server/mysql/my.cnf:/etc/mysql/conf.d/my.cnf'
-      - '/Volumes/WORK/PROJECTS/DOCKERS/mysql/data:/var/lib/mysql'
+      - ./server/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./server/mysql/data:/var/lib/mysql'
     networks:
       - backend
     restart: always
