@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 exec 2>&1
-exec /usr/local/bin/supercronic /etc/crontabs/lt-crons
+exec chpst -u www-data /usr/local/bin/supercronic /etc/crontabs/lt-crons
