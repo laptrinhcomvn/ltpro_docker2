@@ -1,8 +1,8 @@
 FROM php:fpm-alpine
 
-# 2020.09.01
+# 2020.11.02
 # Alpine 3.12
-# PHP 7.4.10
+# PHP 7.4.12
 # using supercronic v0.1.11
 # This image can use for PHP-FPM or cronjob
 

@@ -9,7 +9,7 @@ Dockers Env 2 Production target, for developers as 2nd
 ```sh
 docker rmi php:fpm-alpine --force
 docker pull php:fpm-alpine
-docker image build -t laptrinhcomvn/ltpro_phpfpm:1.0.11 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
+docker image build -t laptrinhcomvn/ltpro_phpfpm:1.0.12 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
 
 
 docker rmi nginx:alpine-perl --force
@@ -20,7 +20,7 @@ docker image build -t laptrinhcomvn/ltpro_nginx:1.0.9 -t laptrinhcomvn/ltpro_ngi
 ## Push image to docker hub
 
 ```bash
-docker image push laptrinhcomvn/ltpro_phpfpm:1.0.11
+docker image push laptrinhcomvn/ltpro_phpfpm:1.0.12
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
 
 
