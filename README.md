@@ -9,26 +9,29 @@ Dockers Env 2 Production target, for developers as 2nd
 ```sh
 docker rmi php:fpm-alpine --force
 docker pull php:fpm-alpine
-docker image build -t laptrinhcomvn/ltpro_phpfpm:1.0.12 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
+docker image build -t laptrinhcomvn/ltpro_phpfpm:1.1.13 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
 
 
 docker rmi nginx:alpine-perl --force
 docker pull nginx:alpine-perl
-docker image build -t laptrinhcomvn/ltpro_nginx:1.0.9 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+docker image build -t laptrinhcomvn/ltpro_nginx:1.0.10 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
 ```
 
 ## Push image to docker hub
 
 ```bash
-docker image push laptrinhcomvn/ltpro_phpfpm:1.0.12
+docker image push laptrinhcomvn/ltpro_phpfpm:1.1.13
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
 
 
-docker image push laptrinhcomvn/ltpro_nginx:1.0.9
+docker image push laptrinhcomvn/ltpro_nginx:1.0.10
 docker image push laptrinhcomvn/ltpro_nginx:latest
 ```
 
 ## Change log
+
+- 27.Jan.2021
+  - PHP v8 upgrade
 
 - 07.Oct.2020:
   - Điều chỉnh tên env Runit is using to run services <http://smarden.org/runit/>; set ENV JOB_ONLY=1;

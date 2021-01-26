@@ -14,10 +14,10 @@ services:
         constraints: [node.platform.os == linux]
 
   portainer:
-    image: portainer/portainer
+    image: portainer/portainer-ce
     command: -H tcp://tasks.agent:9001 --tlsskipverify
     ports:
-      - "8407:9000"
+      - "9000:9000"
     volumes:
       - portainer_data:/data
     networks:

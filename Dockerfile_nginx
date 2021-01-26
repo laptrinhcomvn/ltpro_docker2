@@ -47,7 +47,7 @@ RUN strip /usr/local/modsecurity/bin/* /usr/local/modsecurity/lib/*.a /usr/local
 
 FROM nginx:alpine-perl as ext-builder
 
-ENV NGINX_VERSION=1.19.3
+ENV NGINX_VERSION=1.19.6
 ENV NGX_REDIS_VERSION=0.3.9
 ENV LUAJIT_LIB=/usr/lib
 ENV LUAJIT_INC=/usr/include/luajit-2.1
@@ -198,11 +198,11 @@ FROM nginx:alpine-perl
 
 LABEL maintainer="Tung Le <tung@laptrinh.com.vn>"
 
-# nginx 1.19.2
+# nginx 1.19.6
 
 ENV LUAJIT_LIB=/usr/lib
 ENV LUAJIT_INC=/usr/include/luajit-2.1
-ENV GEO_DB_RELEASE=2020-09
+ENV GEO_DB_RELEASE=2021-01
 
 
 # Copy nginx config from the intermediate container
