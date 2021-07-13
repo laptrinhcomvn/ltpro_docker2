@@ -1,6 +1,6 @@
-FROM nginx:alpine-perl as modsecurity-builder
+FROM nginx:alpine as modsecurity-builder
 
-ENV MODSEC_BRANCH=v3.0.4
+ENV MODSEC_BRANCH=v3.0.5
 
 RUN apk add --no-cache --virtual general-dependencies \
     gcc \
@@ -11,9 +11,7 @@ RUN apk add --no-cache --virtual general-dependencies \
     linux-headers \
     curl \
     gnupg \
-    libxslt-dev \
     gd-dev \
-    perl-dev \
     pcre-dev \
     libxml2-dev \
     git \
@@ -43,14 +41,9 @@ RUN echo "Installing ModSec Library" && \
 RUN strip /usr/local/modsecurity/bin/* /usr/local/modsecurity/lib/*.a /usr/local/modsecurity/lib/*.so*
 
 
+FROM nginx:alpine as ext-builder
 
-
-FROM nginx:alpine-perl as ext-builder
-
-ENV NGINX_VERSION=1.19.6
-ENV NGX_REDIS_VERSION=0.3.9
-ENV LUAJIT_LIB=/usr/lib
-ENV LUAJIT_INC=/usr/include/luajit-2.1
+ENV NGINX_VERSION=1.21.1
 
 RUN apk add --no-cache --virtual general-dependencies build-base \
     gcc \
@@ -61,9 +54,7 @@ RUN apk add --no-cache --virtual general-dependencies build-base \
     linux-headers \
     curl \
     gnupg \
-    libxslt-dev \
     gd-dev \
-    perl-dev \
     pcre-dev \
     libxml2-dev \
     git \
@@ -73,7 +64,6 @@ RUN apk add --no-cache --virtual general-dependencies build-base \
     g++ \
     flex \
     bison \
-    luajit-dev \
     yajl-dev \
     gzip \
     geoip-dev \
@@ -93,30 +83,8 @@ RUN git clone --recursive https://github.com/google/ngx_brotli.git
 
 RUN git clone  --recursive https://github.com/winshining/nginx-http-flv-module.git
 
-RUN git clone --recursive https://github.com/yaoweibin/ngx_http_substitutions_filter_module.git
-
-RUN git clone --recursive https://github.com/openresty/echo-nginx-module.git
-
 RUN git clone  --recursive https://github.com/leev/ngx_http_geoip2_module.git
 
-RUN git clone --recursive https://github.com/simplresty/ngx_devel_kit.git
-
-RUN git clone --recursive https://github.com/openresty/lua-nginx-module.git
-
-RUN git clone http://luajit.org/git/luajit-2.0.git && cd luajit-2.0 && make && make install
-
-RUN git clone --recursive https://github.com/openresty/srcache-nginx-module.git
-
-RUN git clone --recursive https://github.com/openresty/redis2-nginx-module.git
-
-RUN git clone --recursive https://github.com/openresty/set-misc-nginx-module.git
-
-RUN git clone --recursive https://github.com/openresty/headers-more-nginx-module.git
-
-
-RUN wget https://people.freebsd.org/~osa/ngx_http_redis-${NGX_REDIS_VERSION}.tar.gz && \
-    tar -xzvf ngx_http_redis-${NGX_REDIS_VERSION}.tar.gz && \
-    rm -f ngx_http_redis-${NGX_REDIS_VERSION}.tar.gz    
 
 RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
     tar xzf nginx-${NGINX_VERSION}.tar.gz
@@ -153,9 +121,6 @@ RUN cd nginx-"$NGINX_VERSION" && \
         --with-http_random_index_module \
         --with-http_stub_status_module \
         --with-http_secure_link_module \
-        --with-http_image_filter_module=dynamic \
-        --with-http_xslt_module=dynamic \
-        --with-http_perl_module=dynamic \
         --with-threads \
         --with-stream \
         --with-stream_ssl_module \
@@ -170,20 +135,10 @@ RUN cd nginx-"$NGINX_VERSION" && \
         --add-dynamic-module=../ModSecurity-nginx \
         --add-dynamic-module=../ngx_http_geoip2_module \
         --add-dynamic-module=../nginx-http-flv-module \
-        --add-dynamic-module=../echo-nginx-module \
-        --add-dynamic-module=../ngx_devel_kit \
-        --add-dynamic-module=../lua-nginx-module \
-        --add-dynamic-module=../srcache-nginx-module \
-        --add-dynamic-module=../redis2-nginx-module \
-        --add-dynamic-module=../set-misc-nginx-module \
-        --add-dynamic-module=../ngx_http_redis-0.3.9 \
-        --add-dynamic-module=../ngx_http_substitutions_filter_module \
-        --add-dynamic-module=../headers-more-nginx-module \
         --with-compat && \
         make -j$(getconf _NPROCESSORS_ONLN) && \
         make modules && \
         cp objs/*.so /usr/lib/nginx/modules/
-
 
 WORKDIR /opt
 
@@ -193,17 +148,12 @@ RUN git clone -b v3.2/master https://github.com/SpiderLabs/owasp-modsecurity-crs
 
 
 
-
-FROM nginx:alpine-perl
+FROM nginx:alpine
 
 LABEL maintainer="Tung Le <tung@laptrinh.com.vn>"
 
-# nginx 1.19.6
-
-ENV LUAJIT_LIB=/usr/lib
-ENV LUAJIT_INC=/usr/include/luajit-2.1
-ENV GEO_DB_RELEASE=2021-01
-
+# nginx 1.21.1
+ENV GEO_DB_RELEASE=2021-07
 
 # Copy nginx config from the intermediate container
 COPY --from=ext-builder /etc/nginx/. /etc/nginx/
@@ -227,7 +177,6 @@ COPY ./server/nginx/owasp/ /usr/local/owasp-modsecurity-crs/
 RUN apk upgrade --no-cache \
     && apk add --no-cache \
     yajl \
-    luajit-dev \
     libstdc++ \
     tzdata \
     libmaxminddb-dev

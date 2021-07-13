@@ -1,2 +1,2 @@
 # * * * * * cd /usr/www/src/laravel && php artisan schedule:run >> /dev/null 2>&1
-* * * * * cd /usr/www/src/mclassvn3 && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /usr/www/src/xclass && php artisan schedule:run 2>&1 >> /usr/www/src/xclass/storage/logs/cron.log

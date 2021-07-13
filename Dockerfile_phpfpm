@@ -1,8 +1,8 @@
 FROM php:fpm-alpine
 
-# 2021.01.07
+# 2021.07.13
 # Alpine 3.13
-# PHP 8.0.1
+# PHP 8.0.7
 # supercronic v0.1.12
 # This image can use for PHP-FPM or cronjob
 
@@ -15,7 +15,7 @@ ENV SUPERCRONIC_VERSION="v0.1.12" \
 
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/$SUPERCRONIC_VERSION/$SUPERCRONIC
 
-ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
     install-php-extensions bcmath calendar exif gd imagick intl memcached mongodb mysqli opcache pdo_mysql pdo_pgsql pgsql redis soap tidy uuid xdebug xsl zip
