@@ -7,28 +7,33 @@ Dockers Env 2 Production target, for developers as 2nd
 ## Building
 
 ```sh
-docker rmi php:fpm-alpine --force
-docker pull php:fpm-alpine
-docker image build -t laptrinhcomvn/ltpro_phpfpm:1.1.14 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
-
-
+#nginx
 docker rmi nginx:alpine-perl --force
 docker pull nginx:alpine-perl
-docker image build -t laptrinhcomvn/ltpro_nginx:1.1.14 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+docker image build -t laptrinhcomvn/ltpro_nginx:1.2.1 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+
+# php-fpm
+docker rmi php:fpm-alpine --force
+docker pull php:fpm-alpine
+docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.1 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
 ```
 
 ## Push image to docker hub
 
 ```bash
+docker image push laptrinhcomvn/ltpro_nginx:1.2.1
+docker image push laptrinhcomvn/ltpro_nginx:latest
+
 docker image push laptrinhcomvn/ltpro_phpfpm:1.1.14
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
-
-
-docker image push laptrinhcomvn/ltpro_nginx:1.1.14
-docker image push laptrinhcomvn/ltpro_nginx:latest
 ```
 
 ## Change log
+
+- 12.Apr.2022
+  - Upgrade base
+  - Nginx: add blocking support for ips, country, know bots
+  - PHP support to develop on windows
 
 - 13.Jul.2021
   - Upgrade base
