@@ -4,6 +4,6 @@ PHP_INI_SCAN_DIR=/usr/local/etc/php/conf.d/:/p/others
 
 export PHP_INI_SCAN_DIR
 
-exec /usr/local/sbin/php-fpm \
+exec chpst -u www-data /usr/local/sbin/php-fpm \
             --nodaemonize \
             --force-stderr 2>&1

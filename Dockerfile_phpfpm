@@ -1,8 +1,8 @@
 FROM php:fpm-alpine
 
-# 2021.07.13
-# Alpine 3.13
-# PHP 8.0.7
+# 2022.04.13
+# Alpine 3.15
+# PHP 8.1.4
 # supercronic v0.1.12
 # This image can use for PHP-FPM or cronjob
 
@@ -47,7 +47,7 @@ RUN apk --update add --no-cache git openssh nano runit && \
 
 # integrate runit
 COPY ./server/runit/boot.sh /sbin/boot.sh
-RUN chmod +x /sbin/boot.sh
+RUN sed -i 's/\r//g' /sbin/boot.sh && chmod +x /sbin/boot.sh
 
 # supercronic for cronjob
 RUN curl -fsSLO "$SUPERCRONIC_URL" \
@@ -61,16 +61,17 @@ COPY ./server/crontabs/lt-crons /etc/crontabs/lt-crons
 # runit services config for fpm
 RUN mkdir /etc/service/fpm
 COPY ./server/runit/php-fpm /etc/service/fpm/run
-RUN chmod +x /etc/service/fpm/run
+RUN sed -i 's/\r//g' /etc/service/fpm/run && chmod +x /etc/service/fpm/run
 
 
 # runit config service config for supercronic
 RUN mkdir /etc/service/supercronic && touch /etc/service/supercronic/down
 COPY ./server/runit/supercronic /etc/service/supercronic/run
-RUN chmod +x /etc/service/supercronic/run
+RUN sed -i 's/\r//g' /etc/service/supercronic/run && chmod +x /etc/service/supercronic/run
 
 WORKDIR /usr/www/src
 
+STOPSIGNAL SIGQUIT
 EXPOSE 9000
 
 CMD [ "/sbin/boot.sh" ]

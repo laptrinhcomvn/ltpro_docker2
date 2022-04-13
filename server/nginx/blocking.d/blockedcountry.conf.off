@@ -1,0 +1,8 @@
+# required geoip2 module, check nginx/geoip/readme.md
+# find the list of codes for countries https://dev.maxmind.com/geoip/legacy/codes
+# specify which locations to allow/block
+map $geoip2_data_country_code $allowed_country {
+    default no;
+    '' yes;
+    US yes;
+}
