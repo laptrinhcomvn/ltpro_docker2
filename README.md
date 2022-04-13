@@ -24,9 +24,15 @@ docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.1 -t laptrinhcomvn/ltpro_ph
 docker image push laptrinhcomvn/ltpro_nginx:1.2.1
 docker image push laptrinhcomvn/ltpro_nginx:latest
 
-docker image push laptrinhcomvn/ltpro_phpfpm:1.1.14
+docker image push laptrinhcomvn/ltpro_phpfpm:1.2.1
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
 ```
+
+## Dev Env
+
+- Using portainer.io tools: https://docs.portainer.io/v/ce-2.9/start/install/server/swarm/linux
+- Using ltpro-dev-stack.yml sample to deploy dev env full db & nginx php-fpm
+
 
 ## Change log
 
