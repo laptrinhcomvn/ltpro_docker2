@@ -10,7 +10,7 @@ Dockers Env 2 Production target, for developers as 2nd
 #nginx
 docker rmi nginx:alpine-perl --force
 docker pull nginx:alpine-perl
-docker image build -t laptrinhcomvn/ltpro_nginx:1.2.1 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+docker image build -t laptrinhcomvn/ltpro_nginx:1.2.5 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
 
 # php-fpm
 docker rmi php:fpm-alpine --force
@@ -21,7 +21,7 @@ docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.1 -t laptrinhcomvn/ltpro_ph
 ## Push image to docker hub
 
 ```bash
-docker image push laptrinhcomvn/ltpro_nginx:1.2.1
+docker image push laptrinhcomvn/ltpro_nginx:1.2.5
 docker image push laptrinhcomvn/ltpro_nginx:latest
 
 docker image push laptrinhcomvn/ltpro_phpfpm:1.2.1

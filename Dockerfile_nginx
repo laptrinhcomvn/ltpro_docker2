@@ -154,8 +154,9 @@ FROM nginx:alpine-perl
 
 LABEL maintainer="Tung Le <tung@laptrinh.com.vn>"
 
-# nginx 1.21.6
-ENV GEO_DB_RELEASE=2022-04
+ENV NGINX_VERSION 1.21.6
+ENV NJS_VERSION   0.7.2
+ENV PKG_RELEASE   1
 
 # Copy nginx config from the intermediate container
 COPY --from=ext-builder /etc/nginx/. /etc/nginx/
