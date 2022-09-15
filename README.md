@@ -10,31 +10,35 @@ Dockers Env 2 Production target, for developers as 2nd
 #nginx
 docker rmi nginx:alpine-perl --force
 docker pull nginx:alpine-perl
-docker image build -t laptrinhcomvn/ltpro_nginx:1.2.5 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+docker image build -t laptrinhcomvn/ltpro_nginx:1.2.6 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
 
 # php-fpm
 docker rmi php:fpm-alpine --force
 docker pull php:fpm-alpine
-docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.1 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
+docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.6 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
 ```
 
 ## Push image to docker hub
 
 ```bash
-docker image push laptrinhcomvn/ltpro_nginx:1.2.5
+docker image push laptrinhcomvn/ltpro_nginx:1.2.6
 docker image push laptrinhcomvn/ltpro_nginx:latest
 
-docker image push laptrinhcomvn/ltpro_phpfpm:1.2.1
+docker image push laptrinhcomvn/ltpro_phpfpm:1.2.6
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
 ```
 
 ## Dev Env
 
-- Using portainer.io tools: https://docs.portainer.io/v/ce-2.9/start/install/server/swarm/linux
+- Using portainer.io tools: https://docs.portainer.io/start/install/server/swarm/linux
 - Using ltpro-dev-stack.yml sample to deploy dev env full db & nginx php-fpm
 
 
 ## Change log
+
+- 19.Sept.2022
+  - Upgrade base
+  - Nginx: change config to support forward client ip from cloudflare
 
 - 12.Apr.2022
   - Upgrade base
