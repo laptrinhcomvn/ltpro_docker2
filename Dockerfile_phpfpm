@@ -1,24 +1,24 @@
 FROM php:fpm-alpine
 
-# 2022.04.13
+# 2022.09.15
 # Alpine 3.15
-# PHP 8.1.4
-# supercronic v0.1.12
+# PHP 8.1.10
+# supercronic v0.2.1
 # This image can use for PHP-FPM or cronjob
 
 ENV JOB_ONLY="No"
 ENV CRON_ONLY="No"
 
-ENV SUPERCRONIC_VERSION="v0.1.12" \
+ENV SUPERCRONIC_VERSION="v0.2.1" \
     SUPERCRONIC=supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
+    SUPERCRONIC_SHA1SUM=d7f4c0886eb85249ad05ed592902fa6865bb9d70
 
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/$SUPERCRONIC_VERSION/$SUPERCRONIC
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
-    install-php-extensions bcmath calendar exif gd imagick intl memcached mongodb mysqli opcache pdo_mysql pdo_pgsql pgsql redis soap tidy uuid xdebug xsl zip
+    install-php-extensions bcmath calendar exif gd imagick intl memcached mongodb mysqli opcache pdo_mysql pdo_pgsql pgsql redis soap tidy uuid xdebug xsl zip 
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
