@@ -1,7 +1,69 @@
-#- Create "overlay" network “backend” => subnet: 10.0.5.0/24, “frontend” => subnet: 10.0.6.0/24
+#=============
+# Create Network
+#=============
+- Create "overlay" network “backend” => subnet: 10.0.5.0/24, “frontend” => subnet: 10.0.6.0/24
+
 
 #=============
-# DATA Stack
+# MYSQL DATA Stack
+#=============
+version: "3.7"
+
+services:
+  mysql:
+    image: 'mysql:latest'
+    #command: '--default-authentication-plugin=mysql_native_password'
+    networks:
+      - backend
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - MYSQL_ROOT_PASSWORD=12345678
+    volumes:
+      #- /home/ubuntu/shared/projects/mysql/mysql_cnf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ltmysqldata:/var/lib/mysql
+    ports:
+      - '3306:3306'
+
+
+volumes:
+  ltmysqldata:
+
+networks:
+  backend:
+    external: true
+
+
+
+#=============
+# PERCONA DATA Stack
+#=============
+version: "3.7"
+
+services:
+  percona:
+    image: 'percona/percona-server:latest'
+    networks:
+      - backend
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - MYSQL_ROOT_PASSWORD=12345678
+    volumes:
+      #- /home/ubuntu/shared/projects/mysql/mysql_cnf/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ltperconadata:/var/lib/mysql
+    ports:
+      - '3305:3306'
+
+volumes:
+  ltperconadata:
+
+networks:
+  backend:
+    external: true
+
+
+
+#=============
+# CACHE Stack
 #=============
 version: "3.7"
 
@@ -18,47 +80,10 @@ services:
       - backend
     ports:
       - '6379:6379'
-      
-  mysql:
-    image: 'mysql:latest'
-    #command: '--default-authentication-plugin=mysql_native_password'
-    networks:
-      - backend
-    environment:
-      - TZ=Asia/Ho_Chi_Minh
-      - MYSQL_ROOT_PASSWORD=12345678
-    volumes:
-      #- /home/ubuntu/shared/projects/mysql/mysql_cnf/my.cnf:/etc/mysql/conf.d/my.cnf
-      - ltmysqldata:/var/lib/mysql
-    ports:
-      - '3306:3306'
-
-
-  #mongodb:
-    #image: bitnami/mongodb:latest
-    #networks:
-    #  - backend
-    #ports:
-    #  - '27017:27017'
-    #environment:
-    #  - MONGODB_USERNAME=lt
-    #  - MONGODB_PASSWORD=12345678
-    #  - MONGODB_DATABASE=mclass
-    #volumes:
-    #  - '/home/ubuntu/shared/projects/mongodb:/bitnami'
-
-volumes:
-  ltmysqldata:
 
 networks:
   backend:
-    external:
-      name: backend
-  frontend:
-    external:
-      name: backend
-
-
+    external: true
 
 
 
@@ -97,37 +122,36 @@ services:
     volumes:
       - '/home/ubuntu/shared/projects/ltpro_docker2/server/php/100-others-debug-win.ini:/p/others/100-others.ini'
       - '/home/ubuntu/shared/projects/xclass3:/usr/www/src/xclass'
-      # - /home/ubuntu/shared/xclass/mclass_apps:/usr/www/src/mclass_apps
       
-  #crons:
-  #  image: 'laptrinhcomvn/ltpro_phpfpm:latest'
-  #  environment:
-  #    - ENABLE_IPV6=true
-  #    - TZ=Asia/Ho_Chi_Minh
-  #    - CRON_ONLY=1
-  #  working_dir: /usr/www/src
-  #  networks:
-  #    - backend
-  #  depends_on:
-  #    - mysql
-  #  volumes:
-  #    - '/home/ubuntu/shared/projects/ltpro_docker2/server/crontabs/lt-crons:/etc/crontabs/lt-crons'
-  #    - '/home/ubuntu/shared/projects/xclass3:/usr/www/src/xclass'
-  #
-  #queuejobs:
-  #  image: 'laptrinhcomvn/ltpro_phpfpm:latest'
-  #  environment:
-  #    - ENABLE_IPV6=true
-  #    - TZ=Asia/Ho_Chi_Minh
-  #    - JOB_ONLY=1
-  #  working_dir: /usr/www/src
-  #  networks:
-  #    - backend
-  #  depends_on:
-  #    - mysql
-  #  volumes:
-  #    - '/home/ubuntu/shared/projects/runit_xclass_queue_jobs:/etc/service/runit_xclass_queue_jobs'
-  #    - '/home/ubuntu/shared/projects/xclass3:/usr/www/src/xclass'
+  crons:
+    image: 'laptrinhcomvn/ltpro_phpfpm:latest'
+    environment:
+      - ENABLE_IPV6=true
+      - TZ=Asia/Ho_Chi_Minh
+      - CRON_ONLY=1
+    working_dir: /usr/www/src
+    networks:
+      - backend
+    depends_on:
+      - mysql
+    volumes:
+      - '/home/ubuntu/shared/projects/ltpro_docker2/server/crontabs/lt-crons:/etc/crontabs/lt-crons'
+      - '/home/ubuntu/shared/projects/xclass3:/usr/www/src/xclass'
+  
+  jobs:
+    image: 'laptrinhcomvn/ltpro_phpfpm:latest'
+    environment:
+      - ENABLE_IPV6=true
+      - TZ=Asia/Ho_Chi_Minh
+      - JOB_ONLY=1
+    working_dir: /usr/www/src
+    networks:
+      - backend
+    depends_on:
+      - mysql
+    volumes:
+      - '/home/ubuntu/xclass_jobs:/etc/service/xclass_jobs'
+      - '/home/ubuntu/shared/projects/xclass3:/usr/www/src/xclass'
 
   nginx:
     image: 'laptrinhcomvn/ltpro_nginx:latest'
@@ -148,14 +172,10 @@ services:
       #- '/home/ubuntu/shared/projects/ltpro_docker2/server/nginx/geoip:/etc/nginx/geoip'
       - '/home/ubuntu/shared/projects/nginx-servers:/etc/nginx/sites-enabled'
       - '/home/ubuntu/shared/projects/xclass3:/usr/www/src/xclass'
-      #- /Volumes/WORK/PROJECTS/MCLASS/SRC/mclass_apps:/usr/www/src/mclass_apps
-      #- /Volumes/WORK/PROJECTS/XCLASS/SRC/landingpage:/usr/www/src/landingpage
 
 networks:
   backend:
-    external:
-      name: backend
+    external: true
   frontend:
-    external:
-      name: backend
+    external: true
       
