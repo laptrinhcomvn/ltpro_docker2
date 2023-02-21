@@ -41,8 +41,8 @@ RUN strip /usr/local/modsecurity/bin/* /usr/local/modsecurity/lib/*.a /usr/local
 
 FROM nginx:alpine-perl as ext-builder
 
-ENV NGINX_VERSION 1.23.1
-ENV NJS_VERSION   0.7.6
+ENV NGINX_VERSION 1.23.3
+ENV NJS_VERSION   0.7.9
 ENV PKG_RELEASE   1
 
 RUN apk add --no-cache --virtual general-dependencies build-base \
@@ -156,8 +156,8 @@ FROM nginx:alpine-perl
 
 LABEL maintainer="Tung Le <tung@laptrinh.com.vn>"
 
-ENV NGINX_VERSION 1.23.1
-ENV NJS_VERSION   0.7.6
+ENV NGINX_VERSION 1.23.3
+ENV NJS_VERSION   0.7.9
 ENV PKG_RELEASE   1
 
 # Copy nginx config from the intermediate container
