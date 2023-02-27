@@ -33,7 +33,6 @@ RUN install -d -m 0755 -o www-data -g www-data /.composer &&\
 # disable xdebug
 RUN install -d -m 0755 -o www-data -g www-data /p /p/xdebug /p/others && \
     mv /usr/local/etc/php/conf.d/*xdebug.ini /p/xdebug/;
-
 COPY ./server/php/100-others.ini /p/others/100-others.ini
 
 # enable some custom config for php

@@ -146,8 +146,8 @@ RUN cd nginx-"$NGINX_VERSION" && \
 
 WORKDIR /opt
 
-RUN git clone -b v3.2/master https://github.com/SpiderLabs/owasp-modsecurity-crs && \
-    mv owasp-modsecurity-crs/ /usr/local/
+RUN git clone -b v3.3/master https://github.com/coreruleset/coreruleset && \
+    mv coreruleset/ /usr/local/
 
 
 
@@ -163,7 +163,7 @@ ENV PKG_RELEASE   1
 # Copy nginx config from the intermediate container
 COPY --from=ext-builder /etc/nginx/. /etc/nginx/
 
-# Copy the /usr/local folder form the intermediate container (owasp-modsecurty-crs, modsecurity libs)
+# Copy the /usr/local folder form the intermediate container (coreruleset, modsecurity libs)
 COPY --from=ext-builder /usr/local/. /usr/local/.
 COPY --from=ext-builder /usr/lib/nginx/modules/. /usr/lib/nginx/modules/
 
@@ -177,7 +177,7 @@ COPY ./server/nginx/sites-available/ /etc/nginx/sites-available/
 COPY ./server/nginx/blocking.d/ /etc/nginx/blocking.d/
 COPY ./server/nginx/geoip/ /etc/nginx/geoip/
 COPY ./server/nginx/modsec/ /etc/nginx/modsec/
-COPY ./server/nginx/owasp/ /usr/local/owasp-modsecurity-crs/
+COPY ./server/nginx/owasp/crs-setup.conf /usr/local/coreruleset/
 
 RUN rm -f /etc/nginx/sites-enabled/default
 RUN rm -f /usr/lib/nginx/modules/*-debug.so
