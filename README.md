@@ -15,7 +15,7 @@ docker image build -t laptrinhcomvn/ltpro_nginx:1.2.9 -t laptrinhcomvn/ltpro_ngi
 # php-fpm
 docker rmi php:fpm-alpine --force
 docker pull php:fpm-alpine
-docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.7 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
+docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.9 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
 ```
 
 ## Push image to docker hub
@@ -24,7 +24,7 @@ docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.7 -t laptrinhcomvn/ltpro_ph
 docker image push laptrinhcomvn/ltpro_nginx:1.2.9
 docker image push laptrinhcomvn/ltpro_nginx:latest
 
-docker image push laptrinhcomvn/ltpro_phpfpm:1.2.7
+docker image push laptrinhcomvn/ltpro_phpfpm:1.2.9
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
 ```
 
