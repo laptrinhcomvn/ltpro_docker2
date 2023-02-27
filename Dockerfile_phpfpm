@@ -39,7 +39,7 @@ COPY ./server/php/100-others.ini /p/others/100-others.ini
 RUN chown -R www-data:www-data /p
 
 # install tools: git, nano
-RUN apk --update add --no-cache git openssh nano runit && \
+RUN apk --update add --no-cache git openssh libssl1.1 nano runit && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
