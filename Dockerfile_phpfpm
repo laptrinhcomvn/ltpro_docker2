@@ -1,24 +1,25 @@
 FROM php:fpm-alpine
 
 # 2023.02.21
-# Alpine 3.17
-# PHP 8.2.3
-# supercronic v0.2.1
+# Alpine 3.19
+# PHP 8.3.2
+# supercronic v0.2.29
 # This image can use for PHP-FPM or cronjob
+# Breaking change: remove imagick because failed install https://github.com/Imagick/imagick/issues/643
 
 ENV JOB_ONLY="No"
 ENV CRON_ONLY="No"
 
-ENV SUPERCRONIC_VERSION="v0.2.1" \
+ENV SUPERCRONIC_VERSION="v0.2.29" \
     SUPERCRONIC=supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=d7f4c0886eb85249ad05ed592902fa6865bb9d70
+    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
 
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/$SUPERCRONIC_VERSION/$SUPERCRONIC
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
-    install-php-extensions bcmath calendar exif gd imagick intl memcached mongodb mysqli opcache pdo_mysql pdo_pgsql pgsql redis soap tidy uuid xdebug xsl zip
+    install-php-extensions bcmath calendar exif gd intl memcached mongodb mysqli opcache pdo_mysql pdo_pgsql pgsql redis soap tidy uuid xdebug xsl zip
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
@@ -39,7 +40,7 @@ COPY ./server/php/100-others.ini /p/others/100-others.ini
 RUN chown -R www-data:www-data /p
 
 # install tools: git, nano
-RUN apk --update add --no-cache git openssh libssl1.1 nano runit && \
+RUN apk --update add --no-cache git openssh libssl3 nano runit && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
