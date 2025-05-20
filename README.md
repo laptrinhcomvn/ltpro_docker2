@@ -6,25 +6,34 @@ Dockers Env 2 Production target, for developers as 2nd
 
 ## Building
 
+- https://docs.docker.com/build/building/multi-platform/
+
 ```sh
 #nginx
 docker rmi nginx:alpine-perl --force
 docker pull nginx:alpine-perl
-docker image build -t laptrinhcomvn/ltpro_nginx:1.2.10 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+
+# build
+docker buildx build --platform linux/amd64,linux/arm64 -t laptrinhcomvn/ltpro_nginx:1.2.13 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+
 
 # php-fpm
 docker rmi php:fpm-alpine --force
 docker pull php:fpm-alpine
-docker image build -t laptrinhcomvn/ltpro_phpfpm:1.2.10 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
+
+# build
+docker buildx build --platform linux/amd64,linux/arm64 -t laptrinhcomvn/ltpro_phpfpm:1.2.13 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
 ```
 
 ## Push image to docker hub
 
 ```bash
-docker image push laptrinhcomvn/ltpro_nginx:1.2.10
+docker login -u laptrinhcomvn
+
+docker image push laptrinhcomvn/ltpro_nginx:1.2.13
 docker image push laptrinhcomvn/ltpro_nginx:latest
 
-docker image push laptrinhcomvn/ltpro_phpfpm:1.2.10
+docker image push laptrinhcomvn/ltpro_phpfpm:1.2.13
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
 ```
 
@@ -33,7 +42,16 @@ docker image push laptrinhcomvn/ltpro_phpfpm:latest
 - Using portainer.io tools: https://docs.portainer.io/start/install/server/swarm/linux
 - Using ltpro-dev-stack.yml sample to deploy dev env full db & nginx php-fpm
 
+
+## 2025 Noted
+
+Ref:
+- https://github.com/adhocore/docker-phpfpm
+- https://github.com/joseluisq/alpine-php-fpm 
+
 ## Change log
+- May.2025
+  - Upgrade base
 
 - 21.Jan.2024
   - Upgrade base

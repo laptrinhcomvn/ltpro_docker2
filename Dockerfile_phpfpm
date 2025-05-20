@@ -1,18 +1,11 @@
 FROM php:fpm-alpine
 
-# 2023.02.21
-# Alpine 3.19
-# PHP 8.3.2
-# supercronic v0.2.29
-# This image can use for PHP-FPM or cronjob
-# Breaking change: remove imagick because failed install https://github.com/Imagick/imagick/issues/643
-
 ENV JOB_ONLY="No"
 ENV CRON_ONLY="No"
 
-ENV SUPERCRONIC_VERSION="v0.2.29" \
+ENV SUPERCRONIC_VERSION="v0.2.33" \
     SUPERCRONIC=supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
+    SUPERCRONIC_SHA1SUM=71b0d58cc53f6bd72cf2f293e09e294b79c666d8
 
 ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/$SUPERCRONIC_VERSION/$SUPERCRONIC
 
@@ -26,8 +19,8 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # Install Composer
 RUN install -d -m 0755 -o www-data -g www-data /.composer &&\
     curl -sS https://getcomposer.org/installer | \
-        php -- --install-dir=/usr/local/bin \
-               --filename=composer &&\
+    php -- --install-dir=/usr/local/bin \
+    --filename=composer &&\
     chown -R www-data:www-data /.composer
 
 
@@ -40,10 +33,10 @@ COPY ./server/php/100-others.ini /p/others/100-others.ini
 RUN chown -R www-data:www-data /p
 
 # install tools: git, nano
-RUN apk --update add --no-cache git openssh libssl3 nano runit && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /var/cache/apk/* && \
-    rm -rf /tmp/*
+RUN apk --update add --no-cache git openssh libssl3 nano runit
+
+# cleanup
+RUN rm -rf /var/lib/apt/lists/* /var/cache/apk/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/*
 
 # integrate runit
 COPY ./server/runit/boot.sh /sbin/boot.sh
