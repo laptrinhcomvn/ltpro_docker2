@@ -3,13 +3,13 @@ FROM php:fpm-alpine
 ENV JOB_ONLY="No"
 ENV CRON_ONLY="No"
 
-ENV SUPERCRONIC_VERSION="v0.2.33" \
-    SUPERCRONIC=supercronic-linux-amd64 \
-    SUPERCRONIC_SHA1SUM=71b0d58cc53f6bd72cf2f293e09e294b79c666d8
+ENV SUPERCRONIC_VERSION="v0.2.33"
 
-ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/$SUPERCRONIC_VERSION/$SUPERCRONIC
+ARG TARGETARCH
+ENV BUILD_TARGETARCH=${TARGETARCH:-amd64}
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
 
 RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
     install-php-extensions bcmath calendar exif gd intl memcached mongodb mysqli opcache pdo_mysql pdo_pgsql pgsql redis soap tidy uuid xdebug xsl zip
@@ -43,11 +43,10 @@ COPY ./server/runit/boot.sh /sbin/boot.sh
 RUN sed -i 's/\r//g' /sbin/boot.sh && chmod +x /sbin/boot.sh
 
 # supercronic for cronjob
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
-    && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
-    && chmod +x "$SUPERCRONIC" \
-    && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
-    && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic
+RUN curl -fsSLO "https://github.com/aptible/supercronic/releases/download/$SUPERCRONIC_VERSION/supercronic-linux-${BUILD_TARGETARCH}" \
+    && chmod +x "supercronic-linux-${BUILD_TARGETARCH}" \
+    && mv "supercronic-linux-${BUILD_TARGETARCH}" "/usr/local/bin/supercronic-linux-${BUILD_TARGETARCH}" \
+    && ln -s "/usr/local/bin/supercronic-linux-${BUILD_TARGETARCH}" /usr/local/bin/supercronic
 
 COPY ./server/crontabs/lt-crons /etc/crontabs/lt-crons
 

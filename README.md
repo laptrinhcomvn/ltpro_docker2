@@ -14,7 +14,7 @@ docker rmi nginx:alpine-perl --force
 docker pull nginx:alpine-perl
 
 # build
-docker buildx build --platform linux/amd64,linux/arm64 -t laptrinhcomvn/ltpro_nginx:1.2.13 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
+docker buildx build --platform linux/amd64,linux/arm64 -t laptrinhcomvn/ltpro_nginx:1.2.14 -t laptrinhcomvn/ltpro_nginx:latest -f Dockerfile_nginx .
 
 
 # php-fpm
@@ -22,7 +22,7 @@ docker rmi php:fpm-alpine --force
 docker pull php:fpm-alpine
 
 # build
-docker buildx build --platform linux/amd64,linux/arm64 -t laptrinhcomvn/ltpro_phpfpm:1.2.13 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
+docker buildx build --platform linux/amd64,linux/arm64 -t laptrinhcomvn/ltpro_phpfpm:1.2.14 -t laptrinhcomvn/ltpro_phpfpm:latest -f Dockerfile_phpfpm .
 ```
 
 ## Push image to docker hub
@@ -30,10 +30,10 @@ docker buildx build --platform linux/amd64,linux/arm64 -t laptrinhcomvn/ltpro_ph
 ```bash
 docker login -u laptrinhcomvn
 
-docker image push laptrinhcomvn/ltpro_nginx:1.2.13
+docker image push laptrinhcomvn/ltpro_nginx:1.2.14
 docker image push laptrinhcomvn/ltpro_nginx:latest
 
-docker image push laptrinhcomvn/ltpro_phpfpm:1.2.13
+docker image push laptrinhcomvn/ltpro_phpfpm:1.2.14
 docker image push laptrinhcomvn/ltpro_phpfpm:latest
 ```
 
