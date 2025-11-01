@@ -33,7 +33,7 @@ networks:
 
 
 #=============
-# CACHE Stack
+# WEB Stack
 #=============
 version: "3.7"
 
@@ -50,33 +50,6 @@ services:
       - backend
     ports:
       - '6379:6379'
-
-networks:
-  backend:
-    external: true
-
-
-
-#=============
-# WEB Stack
-#=============
-version: "3.7"
-
-services:
-  #chatsrv:
-  #  image: 'node:17-alpine'
-  #  environment:
-  #    - ENABLE_IPV6=true
-  #    - TZ=Asia/Ho_Chi_Minh
-  #  command: 'sh -c "npm run startSrv"'
-  #  working_dir: /app
-  #  volumes:
-  #    - '/home/ubuntu/shared/projects/xclass3/packages/xclass/chat:/app'
-  #  networks:
-  #    - backend
-  #  expose:
-  #    - '3000'
-  #  restart: always
 
   phpfpm:
     image: 'laptrinhcomvn/ltpro_phpfpm:latest'

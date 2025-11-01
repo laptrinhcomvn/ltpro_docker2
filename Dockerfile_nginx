@@ -1,6 +1,6 @@
 FROM nginx:alpine-perl AS ext-builder
 
-ENV NGINX_VERSION=1.27.5
+ENV NGINX_VERSION=1.29.3
 ENV PKG_RELEASE=1
 
 RUN apk add --no-cache --virtual general-dependencies build-base \
@@ -33,9 +33,6 @@ WORKDIR /opt
 
 RUN git clone --recursive https://github.com/google/ngx_brotli.git
 
-RUN git clone --recursive https://github.com/winshining/nginx-http-flv-module.git
-
-
 RUN wget https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
     tar xzf nginx-${NGINX_VERSION}.tar.gz
 
@@ -66,7 +63,6 @@ RUN cd nginx-"$NGINX_VERSION" && \
         --with-http_addition_module \
         --with-http_auth_request_module \
         --with-http_dav_module \
-        --with-http_flv_module \
         --with-http_gunzip_module \
         --with-http_gzip_static_module \
         --with-http_mp4_module \
@@ -86,8 +82,7 @@ RUN cd nginx-"$NGINX_VERSION" && \
         --with-stream_ssl_preread_module \
         --with-cc-opt='-Os -fomit-frame-pointer -g' --with-ld-opt=-Wl,--as-needed,-O1,--sort-common \
         --with-pcre-jit \
-        --add-dynamic-module=../ngx_brotli \
-        --add-dynamic-module=../nginx-http-flv-module && \
+        --add-dynamic-module=../ngx_brotli && \
         make -j$(getconf _NPROCESSORS_ONLN) && \
         make modules && \
         cp objs/*.so /usr/lib/nginx/modules/
@@ -100,7 +95,7 @@ FROM nginx:alpine-perl
 
 LABEL maintainer="Tung Le <tung@laptrinh.com.vn>"
 
-ENV NGINX_VERSION=1.27.5
+ENV NGINX_VERSION=1.29.3
 ENV PKG_RELEASE=1
 
 # Copy nginx config from the intermediate container
